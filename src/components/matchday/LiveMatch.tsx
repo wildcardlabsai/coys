@@ -34,6 +34,7 @@ const EVENT_ICONS: Record<string, string> = {
 };
 
 export function LiveMatch({
+  fixtureId,
   homeTeam,
   awayTeam,
   homeTeamId,
@@ -49,26 +50,43 @@ export function LiveMatch({
   const [status, setStatus] = useState(initialStatus);
   const [events, setEvents] = useState<LiveMatchEvent[]>([]);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const refresh = useCallback(async () => {
-    // In a real app, this would fetch from the football API
-    // For now we just update the refresh timestamp
-    setLastRefresh(new Date());
+    setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/football/live');
+      if (res.ok) {
+        const json = await res.json();
+        const fixtures = json.data ?? json;
+        const match = Array.isArray(fixtures)
+          ? fixtures.find((f: { id: number }) => f.id === fixtureId)
+          : null;
 
-    // Simulate minute ticking up
-    setMinute((prev) => {
-      if (prev === null) return null;
-      if (status === 'halftime') return prev;
-      return Math.min(prev + 1, 90);
-    });
-  }, [status]);
+        if (match) {
+          setHomeScore(match.homeScore ?? homeScore);
+          setAwayScore(match.awayScore ?? awayScore);
+          setMinute(match.minute ?? minute);
+          if (match.status === 'halftime') setStatus('halftime');
+          else if (match.status === 'live') setStatus('live');
+          if (match.events && Array.isArray(match.events)) {
+            setEvents(match.events);
+          }
+        }
+      }
+    } catch {
+      // Silently handle - will retry on next interval
+    } finally {
+      setLastRefresh(new Date());
+      setIsRefreshing(false);
+    }
+  }, [fixtureId, homeScore, awayScore, minute]);
 
   useEffect(() => {
     const interval = setInterval(refresh, 30_000);
     return () => clearInterval(interval);
   }, [refresh]);
 
-  // Sync with props
   useEffect(() => {
     setHomeScore(initialHomeScore);
     setAwayScore(initialAwayScore);
@@ -83,7 +101,6 @@ export function LiveMatch({
         className
       )}
     >
-      {/* Live indicator */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Radio className="w-4 h-4 text-red-500 animate-pulse" />
@@ -100,12 +117,12 @@ export function LiveMatch({
           onClick={refresh}
           className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           title="Refresh"
+          disabled={isRefreshing}
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className={cn('w-4 h-4', isRefreshing && 'animate-spin')} />
         </button>
       </div>
 
-      {/* Score */}
       <div className="flex items-center justify-center gap-4 py-2">
         <div className="flex-1 text-right">
           <span className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
@@ -122,7 +139,6 @@ export function LiveMatch({
         </div>
       </div>
 
-      {/* Recent Events */}
       {events.length > 0 && (
         <div className="mt-3 border-t border-red-200/50 dark:border-red-800/30 pt-3 space-y-1.5">
           {events.slice(-3).map((event, idx) => (
@@ -141,7 +157,6 @@ export function LiveMatch({
         </div>
       )}
 
-      {/* Last updated */}
       <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mt-3">
         Last updated: {lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
       </p>
