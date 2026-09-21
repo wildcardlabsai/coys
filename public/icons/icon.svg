@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#132257"/>
+  <text x="256" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="120" fill="white">COYS</text>
+  <text x="256" y="340" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="400" font-size="48" fill="#8DB7E0">MATCHDAY</text>
+  <line x1="120" y1="230" x2="392" y2="230" stroke="#8DB7E0" stroke-width="3"/>
+</svg>

@@ -6,7 +6,6 @@ import {
   CalendarDays,
   ChevronRight,
   Bookmark,
-  Heart,
   Settings,
   Trophy,
   Edit,
@@ -52,22 +51,16 @@ const menuItems = [
     href: '/profile/badges',
   },
   {
-    icon: Heart,
-    title: 'Saved Pubs',
-    description: 'Your favourite places',
-    href: '/pubs',
-  },
-  {
     icon: Bookmark,
     title: 'Saved Items',
-    description: 'Pubs, hotels, guides and more',
-    href: '/explore',
+    description: 'Pubs, fixtures, and grounds',
+    href: '/profile/saved',
   },
   {
     icon: Settings,
-    title: 'Preferences',
-    description: 'Notifications and settings',
-    href: '/profile',
+    title: 'Settings',
+    description: 'Appearance, notifications & account',
+    href: '/profile/settings',
   },
 ];
 

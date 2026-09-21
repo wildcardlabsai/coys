@@ -15,6 +15,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MatchdayHero } from '@/components/matchday/MatchdayHero';
+import { WebsiteJsonLd } from '@/components/shared/JsonLd';
 import {
   getNextFixture,
   getRecentResults,
@@ -174,6 +175,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0e1a]">
+      <WebsiteJsonLd />
       {/* Hero Section */}
       <section className="px-4 pt-6 pb-2">
         <div className="max-w-lg mx-auto">
